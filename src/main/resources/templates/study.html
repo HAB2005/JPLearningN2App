@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Học tập - JLPT N2 Practice</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/study.css}">
+    <script th:replace="~{fragments/header :: header-script}"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div th:replace="~{fragments/header :: header}"></div>
+            
+            <!-- Study Content -->
+            <div class="content">
+                <div class="study-header">
+                    <h2>📚 Học tập</h2>
+                    <p>Chọn loại nội dung và bài học để bắt đầu</p>
+                </div>
+
+                <!-- Type Tabs -->
+                <div class="type-tabs">
+                    <button class="tab-btn active" onclick="switchTab('vocabulary')">
+                        📖 Từ vựng
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('kanji')">
+                        ✍️ Kanji
+                    </button>
+                </div>
+
+                <!-- Vocabulary Section -->
+                <div id="vocabulary-section" class="tab-content active">
+                    <div class="chapters-grid">
+                        <div th:each="chapter : ${chapters}" class="chapter-card">
+                            <div class="chapter-header">
+                                <h3 th:text="${chapter.name}">Chapter 1</h3>
+                                <p th:text="${chapter.description}">Mô tả chương</p>
+                            </div>
+                            <div class="lessons-list">
+                                <a th:each="lesson : ${chapter.lessons}" 
+                                   th:href="@{/study/lesson/{id}(id=${lesson.id})}"
+                                   class="lesson-item">
+                                    <span class="lesson-name" th:text="${lesson.name}">Lesson 1</span>
+                                    <span class="lesson-count" th:text="${lesson.flashcards != null ? lesson.flashcards.size() : 0} + ' từ'">10 từ</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div th:if="${chapters.isEmpty()}" class="empty-state">
+                        <p>📚 Chưa có chương học nào. Vui lòng thêm dữ liệu vào database.</p>
+                    </div>
+                </div>
+
+                <!-- Kanji Section -->
+                <div id="kanji-section" class="tab-content">
+                    <div class="kanji-options">
+                        <div class="kanji-selector-card">
+                            <h3>Chọn số lượng Kanji</h3>
+                            <p>Chọn số lượng kanji bạn muốn học trong phiên này</p>
+                            
+                            <div class="kanji-quantity-options">
+                                <button class="quantity-btn" onclick="startKanjiStudy(10)">
+                                    <span class="quantity-number">10</span>
+                                    <span class="quantity-label">Kanji</span>
+                                </button>
+                                <button class="quantity-btn" onclick="startKanjiStudy(20)">
+                                    <span class="quantity-number">20</span>
+                                    <span class="quantity-label">Kanji</span>
+                                </button>
+                                <button class="quantity-btn" onclick="startKanjiStudy(30)">
+                                    <span class="quantity-number">30</span>
+                                    <span class="quantity-label">Kanji</span>
+                                </button>
+                                <button class="quantity-btn" onclick="startKanjiStudy(50)">
+                                    <span class="quantity-number">50</span>
+                                    <span class="quantity-label">Kanji</span>
+                                </button>
+                            </div>
+
+                            <div class="custom-quantity">
+                                <label for="customQuantity">Hoặc nhập số lượng tùy chỉnh:</label>
+                                <div class="custom-input-group">
+                                    <input type="number" id="customQuantity" min="1" max="200" placeholder="Nhập số lượng">
+                                    <button class="btn-custom" onclick="startCustomKanjiStudy()">Bắt đầu</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="kanji-info-card">
+                            <h4>💡 Gợi ý học tập</h4>
+                            <ul>
+                                <li>Bắt đầu với 10-20 kanji nếu bạn mới học</li>
+                                <li>Học đều đặn mỗi ngày sẽ hiệu quả hơn học nhiều một lúc</li>
+                                <li>Hệ thống sẽ ưu tiên các kanji bạn chưa học</li>
+                                <li>Bạn có thể đánh dấu kanji đã thuộc để không hiện lại</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(type) {
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to selected tab
+            event.target.classList.add('active');
+            document.getElementById(type + '-section').classList.add('active');
+        }
+
+        function startKanjiStudy(quantity) {
+            window.location.href = '/study/kanji?quantity=' + quantity;
+        }
+
+        function startCustomKanjiStudy() {
+            const quantity = document.getElementById('customQuantity').value;
+            if (quantity && quantity > 0) {
+                window.location.href = '/study/kanji?quantity=' + quantity;
+            } else {
+                alert('Vui lòng nhập số lượng hợp lệ');
+            }
+        }
+    </script>
+</body>
+</html>

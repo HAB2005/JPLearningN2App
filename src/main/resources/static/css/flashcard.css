@@ -1,0 +1,780 @@
+.flashcard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.lesson-info h2 {
+    color: #333;
+    font-size: 24px;
+    margin: 10px 0 5px 0;
+}
+
+.lesson-info p {
+    color: #666;
+    font-size: 14px;
+}
+
+.back-btn {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-block;
+    margin-bottom: 10px;
+    transition: transform 0.2s;
+}
+
+.back-btn:hover {
+    transform: translateX(-5px);
+}
+
+.progress-info {
+    font-size: 24px;
+    font-weight: 600;
+    color: #667eea;
+}
+
+.current-card {
+    font-size: 32px;
+}
+
+/* Mode Switcher */
+.mode-switcher {
+    position: relative;
+    display: flex;
+    gap: 0;
+    background: #f0f0f0;
+    padding: 4px;
+    border-radius: 12px;
+}
+
+.mode-slider {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: calc(50% - 4px);
+    height: calc(100% - 8px);
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
+    transform: translateX(100%);
+}
+
+.mode-btn {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    transition: color 0.3s;
+    flex: 1;
+    justify-content: center;
+    min-width: 130px;
+}
+
+.mode-btn:hover {
+    color: #667eea;
+}
+
+.mode-btn.active {
+    color: #667eea;
+}
+
+.mode-icon {
+    font-size: 20px;
+}
+
+.mode-label {
+    font-size: 14px;
+}
+
+/* Study Modes */
+.study-mode {
+    display: none;
+}
+
+.study-mode.active {
+    display: block;
+}
+
+/* Flashcard Container */
+.flashcard-container {
+    perspective: 1000px;
+    margin: 40px auto;
+    max-width: 600px;
+    height: 400px;
+}
+
+.flashcard {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.card-inner.flipped {
+    transform: rotateY(180deg);
+}
+
+.card-front,
+.card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    padding: 40px;
+}
+
+.card-back {
+    transform: rotateY(180deg);
+}
+
+.card-type {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.word {
+    font-size: 72px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+
+
+.tap-hint {
+    position: absolute;
+    bottom: 30px;
+    color: #999;
+    font-size: 16px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+/* Back Side */
+.back-scroll {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    padding: 20px;
+    padding-right: 15px;
+}
+
+/* Custom Scrollbar */
+.back-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+
+.back-scroll::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 10px;
+}
+
+.back-scroll::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+    transition: background 0.3s;
+}
+
+.back-scroll::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+/* Firefox */
+.back-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #667eea transparent;
+}
+
+.word-header {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.word-small {
+    font-size: 32px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.reading-small {
+    font-size: 18px;
+    color: #667eea;
+}
+
+.meaning {
+    font-size: 24px;
+    color: #28a745;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Sections */
+.section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #667eea;
+    margin: 20px 0 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+/* Kanji Section */
+.kanji-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.kanji-item {
+    display: flex;
+    gap: 15px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    align-items: center;
+}
+
+.kanji-char {
+    font-size: 36px;
+    font-weight: 700;
+    color: #333;
+    min-width: 50px;
+    text-align: center;
+}
+
+.kanji-info {
+    flex: 1;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #555;
+}
+
+.kanji-info div {
+    margin-bottom: 3px;
+}
+
+/* Related Words */
+.related-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.related-item {
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.related-word {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.related-reading {
+    font-size: 14px;
+    color: #667eea;
+    margin-left: 8px;
+}
+
+.related-meaning {
+    font-size: 13px;
+    color: #666;
+}
+
+/* Examples */
+.examples-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.example-item {
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.example-jp {
+    font-size: 15px;
+    color: #333;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+.example-vn {
+    font-size: 13px;
+    color: #666;
+    font-style: italic;
+}
+
+/* Navigation Controls */
+.navigation-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 600px;
+    margin: 30px auto;
+    gap: 20px;
+}
+
+.nav-btn {
+    padding: 15px 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, opacity 0.2s;
+    min-width: 120px;
+}
+
+.nav-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+}
+
+.nav-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.card-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.action-btn {
+    padding: 12px 20px;
+    background: white;
+    color: #667eea;
+    border: 2px solid #667eea;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.action-btn:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Progress Bar */
+.progress-bar-container {
+    max-width: 600px;
+    margin: 20px auto;
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transition: width 0.3s;
+    width: 0%;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .flashcard-container {
+        height: 350px;
+    }
+    
+    .word {
+        font-size: 56px;
+    }
+    
+    .reading {
+        font-size: 24px;
+    }
+    
+    .navigation-controls {
+        flex-direction: column;
+    }
+    
+    .nav-btn {
+        width: 100%;
+    }
+    
+    .card-actions {
+        width: 100%;
+    }
+    
+    .action-btn {
+        flex: 1;
+    }
+}
+
+/* List Mode Styles */
+.list-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 20px;
+}
+
+.search-box {
+    flex: 1;
+    position: relative;
+    max-width: 500px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: #999;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 14px 20px 14px 45px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 15px;
+    transition: all 0.3s;
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.list-stats {
+    font-size: 16px;
+    font-weight: 600;
+    color: #667eea;
+    background: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Vocabulary List */
+.vocabulary-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: calc(100vh - 300px);
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* Custom Scrollbar for List */
+.vocabulary-list::-webkit-scrollbar {
+    width: 10px;
+}
+
+.vocabulary-list::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 10px;
+}
+
+.vocabulary-list::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+}
+
+.vocabulary-list::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+.vocab-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 18px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s;
+    flex-wrap: wrap;
+}
+
+.vocab-item:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+}
+
+.vocab-number {
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.vocab-main {
+    flex: 1;
+    min-width: 200px;
+}
+
+.vocab-word-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.vocab-word {
+    font-size: 28px;
+    font-weight: 700;
+    color: #333;
+}
+
+.vocab-reading {
+    font-size: 16px;
+    color: #667eea;
+    font-weight: 500;
+}
+
+.vocab-meaning {
+    font-size: 16px;
+    color: #28a745;
+    font-weight: 600;
+}
+
+.vocab-expand-btn {
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f0;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.vocab-expand-btn:hover {
+    background: #667eea;
+    color: white;
+}
+
+.vocab-expand-btn.expanded {
+    background: #667eea;
+    color: white;
+}
+
+.expand-icon {
+    font-size: 14px;
+    transition: transform 0.3s;
+}
+
+/* Vocab Detail */
+.vocab-detail {
+    width: 100%;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 2px solid #f0f0f0;
+}
+
+.detail-section {
+    margin-bottom: 20px;
+}
+
+.detail-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #667eea;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+/* Kanji Detail */
+.kanji-list-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.kanji-item-detail {
+    display: flex;
+    gap: 12px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    align-items: center;
+}
+
+.kanji-char-detail {
+    font-size: 32px;
+    font-weight: 700;
+    color: #333;
+    min-width: 45px;
+    text-align: center;
+}
+
+.kanji-info-detail {
+    flex: 1;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #555;
+}
+
+.kanji-info-detail div {
+    margin-bottom: 3px;
+}
+
+/* Related Words Detail */
+.related-list-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.related-item-detail {
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.related-word-detail {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.related-reading-detail {
+    font-size: 14px;
+    color: #667eea;
+    margin-left: 8px;
+}
+
+.related-meaning-detail {
+    font-size: 13px;
+    color: #666;
+    margin-top: 4px;
+}
+
+/* Examples Detail */
+.examples-list-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.example-item-detail {
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.example-jp-detail {
+    font-size: 15px;
+    color: #333;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+.example-vn-detail {
+    font-size: 13px;
+    color: #666;
+    font-style: italic;
+}
+
+/* Responsive for List Mode */
+@media (max-width: 768px) {
+    .list-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-box {
+        max-width: 100%;
+    }
+    
+    .vocab-word {
+        font-size: 24px;
+    }
+    
+    .vocab-reading {
+        font-size: 14px;
+    }
+    
+    .mode-switcher {
+        width: 100%;
+    }
+    
+    .mode-btn {
+        flex: 1;
+        justify-content: center;
+    }
+    
+    .header-right {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+}

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:fragment="header" class="header">
+        <div class="header-left">
+            <h1 class="page-title" th:text="${pageTitle != null ? pageTitle : ''}"></h1>
+        </div>
+        
+        <div class="header-right">
+            <div class="user-info">
+                <span class="username" th:text="${session.user != null ? session.user.username : 'Guest'}">Username</span>
+                <div class="user-dropdown">
+                    <button class="user-avatar" onclick="toggleDropdown(event)">
+                        <span th:text="${session.user != null ? session.user.username.substring(0,1).toUpperCase() : 'U'}">U</span>
+                    </button>
+                    <div class="dropdown-menu" id="userDropdown">
+                        <a href="/profile" class="dropdown-item">
+                            <span class="icon">👤</span>
+                            Thông tin cá nhân
+                        </a>
+                        <a href="/logout" class="dropdown-item logout">
+                            <span class="icon">🚪</span>
+                            Đăng xuất
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script th:fragment="header-script">
+        function toggleDropdown(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+        
+        // Close dropdown when clicking outside
+        window.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown && dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

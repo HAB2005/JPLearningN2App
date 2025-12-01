@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Học flashcard - JLPT N2 Practice</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/flashcard.css}">
+    <script th:replace="~{fragments/header :: header-script}"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div th:replace="~{fragments/header :: header}"></div>
+            
+            <!-- Flashcard Content -->
+            <div class="content">
+                <div class="flashcard-header">
+                    <div class="lesson-info">
+                        <a href="/study" class="back-btn">← Quay lại</a>
+                        <h2 th:text="${lesson.name}">Lesson 1</h2>
+                        <p th:text="${lesson.description}">Mô tả bài học</p>
+                    </div>
+                    <div class="header-right">
+                        <div class="progress-info" id="progressInfo">
+                            <span class="current-card" id="currentCard">1</span> / 
+                            <span class="total-cards" th:text="${flashcards.size()}">20</span>
+                        </div>
+                        <div class="mode-switcher">
+                            <div class="mode-slider"></div>
+                            <button class="mode-btn" id="flashcardModeBtn" onclick="switchMode('flashcard')">
+                                <span class="mode-icon">🎴</span>
+                                <span class="mode-label">Flashcard</span>
+                            </button>
+                            <button class="mode-btn active" id="listModeBtn" onclick="switchMode('list')">
+                                <span class="mode-icon">📋</span>
+                                <span class="mode-label">Danh sách</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Flashcard Mode -->
+                <div id="flashcardMode" class="study-mode">
+                    <!-- All Flashcards -->
+                    <div th:each="card, iterStat : ${flashcards}" 
+                         th:attr="data-index=${iterStat.index}"
+                         th:class="${iterStat.index == 0 ? 'flashcard-container active' : 'flashcard-container'}"
+                         style="display: none;">
+                    
+                    <div class="flashcard">
+                        <div class="card-inner">
+                            <!-- Front Side -->
+                            <div class="card-front">
+                                <div class="card-type">Từ vựng</div>
+                                <div class="word" th:text="${card.word}">言葉</div>
+                                <div class="tap-hint">👆 Nhấn để xem nghĩa và cách đọc</div>
+                            </div>
+                            
+                            <!-- Back Side -->
+                            <div class="card-back">
+                                <div class="back-scroll">
+                                    <div class="word-header">
+                                        <div class="word-small" th:text="${card.word}">言葉</div>
+                                        <div class="reading-small" th:text="${card.reading}">ことば</div>
+                                    </div>
+                                    <div class="meaning" th:text="${card.meaning}">Từ ngữ, ngôn từ</div>
+                                    
+                                    <!-- Parse JSON note -->
+                                    <th:block th:if="${card.note != null}">
+                                        <script th:inline="javascript">
+                                            /*<![CDATA[*/
+                                            (function() {
+                                                try {
+                                                    var noteStr = /*[[${card.note}]]*/ '';
+                                                    var noteData = JSON.parse(noteStr);
+                                                    var container = document.currentScript.parentElement;
+                                                    
+                                                    // Kanji breakdown
+                                                    if (noteData.kanji && noteData.kanji.length > 0) {
+                                                        var kanjiHtml = '<div class="section-title">📝 Phân tích Kanji</div><div class="kanji-list">';
+                                                        noteData.kanji.forEach(function(k) {
+                                                            kanjiHtml += '<div class="kanji-item"><div class="kanji-char">' + k.char + '</div><div class="kanji-info">';
+                                                            if (k.on) kanjiHtml += '<div><strong>Âm On:</strong> ' + k.on + '</div>';
+                                                            if (k.kun) kanjiHtml += '<div><strong>Âm Kun:</strong> ' + k.kun + '</div>';
+                                                            kanjiHtml += '<div><strong>Nghĩa:</strong> ' + k.meaning + '</div></div></div>';
+                                                        });
+                                                        kanjiHtml += '</div>';
+                                                        
+                                                        var kanjiDiv = document.createElement('div');
+                                                        kanjiDiv.className = 'kanji-section';
+                                                        kanjiDiv.innerHTML = kanjiHtml;
+                                                        container.appendChild(kanjiDiv);
+                                                    }
+                                                    
+                                                    // Related words
+                                                    if (noteData.related && noteData.related.length > 0) {
+                                                        var relatedHtml = '<div class="section-title">🔗 Từ liên quan</div><div class="related-list">';
+                                                        noteData.related.forEach(function(r) {
+                                                            relatedHtml += '<div class="related-item"><div class="related-word">' + r.word + ' <span class="related-reading">' + r.reading + '</span></div>';
+                                                            relatedHtml += '<div class="related-meaning">' + r.meaning + '</div></div>';
+                                                        });
+                                                        relatedHtml += '</div>';
+                                                        
+                                                        var relatedDiv = document.createElement('div');
+                                                        relatedDiv.className = 'related-section';
+                                                        relatedDiv.innerHTML = relatedHtml;
+                                                        container.appendChild(relatedDiv);
+                                                    }
+                                                    
+                                                    // Examples
+                                                    if (noteData.examples && noteData.examples.length > 0) {
+                                                        var examplesHtml = '<div class="section-title">💬 Ví dụ</div><div class="examples-list">';
+                                                        noteData.examples.forEach(function(ex) {
+                                                            examplesHtml += '<div class="example-item"><div class="example-jp">' + ex.japanese + '</div>';
+                                                            examplesHtml += '<div class="example-vn">' + ex.vietnamese + '</div></div>';
+                                                        });
+                                                        examplesHtml += '</div>';
+                                                        
+                                                        var examplesDiv = document.createElement('div');
+                                                        examplesDiv.className = 'examples-section';
+                                                        examplesDiv.innerHTML = examplesHtml;
+                                                        container.appendChild(examplesDiv);
+                                                    }
+                                                } catch (e) {
+                                                    console.error('Error parsing note:', e);
+                                                }
+                                            })();
+                                            /*]]>*/
+                                        </script>
+                                    </th:block>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <div class="navigation-controls">
+                    <button class="nav-btn" id="prevBtn" disabled>
+                        ← Trước
+                    </button>
+                    
+                    <div class="card-actions">
+                        <button class="action-btn" id="markLearnedBtn">
+                            ✓ Đã thuộc
+                        </button>
+                        <button class="action-btn" id="flipBtn">
+                            🔄 Lật thẻ
+                        </button>
+                    </div>
+                    
+                    <button class="nav-btn" id="nextBtn">
+                        Sau →
+                    </button>
+                </div>
+
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- List Mode -->
+                <div id="listMode" class="study-mode active">
+                    <div class="list-controls">
+                        <div class="search-box">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" id="searchInput" placeholder="Tìm kiếm từ vựng, nghĩa, cách đọc..." onkeyup="filterList()">
+                        </div>
+                        <div class="list-stats">
+                            <span id="listCount" th:text="${flashcards.size()}">0</span> từ
+                        </div>
+                    </div>
+
+                    <div class="vocabulary-list" id="vocabularyList">
+                        <div th:each="card, iterStat : ${flashcards}" class="vocab-item" th:attr="data-word=${card.word}, data-reading=${card.reading}, data-meaning=${card.meaning}">
+                            <div class="vocab-number" th:text="${iterStat.index + 1}">1</div>
+                            <div class="vocab-main">
+                                <div class="vocab-word-row">
+                                    <span class="vocab-word" th:text="${card.word}">言葉</span>
+                                    <span class="vocab-reading" th:text="${card.reading}">ことば</span>
+                                </div>
+                                <div class="vocab-meaning" th:text="${card.meaning}">Từ ngữ, ngôn từ</div>
+                            </div>
+                            <button class="vocab-expand-btn" onclick="toggleVocabDetail(this)">
+                                <span class="expand-icon">▼</span>
+                            </button>
+                            
+                            <!-- Detail Section (Hidden by default) -->
+                            <div class="vocab-detail" style="display: none;">
+                                <th:block th:if="${card.note != null}">
+                                    <script th:inline="javascript">
+                                        /*<![CDATA[*/
+                                        (function() {
+                                            try {
+                                                var noteStr = /*[[${card.note}]]*/ '';
+                                                var noteData = JSON.parse(noteStr);
+                                                var container = document.currentScript.parentElement;
+                                                
+                                                // Kanji breakdown
+                                                if (noteData.kanji && noteData.kanji.length > 0) {
+                                                    var kanjiHtml = '<div class="detail-section"><div class="detail-title">📝 Phân tích Kanji</div><div class="kanji-list-detail">';
+                                                    noteData.kanji.forEach(function(k) {
+                                                        kanjiHtml += '<div class="kanji-item-detail"><div class="kanji-char-detail">' + k.char + '</div><div class="kanji-info-detail">';
+                                                        if (k.on) kanjiHtml += '<div><strong>Âm On:</strong> ' + k.on + '</div>';
+                                                        if (k.kun) kanjiHtml += '<div><strong>Âm Kun:</strong> ' + k.kun + '</div>';
+                                                        kanjiHtml += '<div><strong>Nghĩa:</strong> ' + k.meaning + '</div></div></div>';
+                                                    });
+                                                    kanjiHtml += '</div></div>';
+                                                    container.innerHTML += kanjiHtml;
+                                                }
+                                                
+                                                // Related words
+                                                if (noteData.related && noteData.related.length > 0) {
+                                                    var relatedHtml = '<div class="detail-section"><div class="detail-title">🔗 Từ liên quan</div><div class="related-list-detail">';
+                                                    noteData.related.forEach(function(r) {
+                                                        relatedHtml += '<div class="related-item-detail"><span class="related-word-detail">' + r.word + '</span> <span class="related-reading-detail">' + r.reading + '</span><div class="related-meaning-detail">' + r.meaning + '</div></div>';
+                                                    });
+                                                    relatedHtml += '</div></div>';
+                                                    container.innerHTML += relatedHtml;
+                                                }
+                                                
+                                                // Examples
+                                                if (noteData.examples && noteData.examples.length > 0) {
+                                                    var examplesHtml = '<div class="detail-section"><div class="detail-title">💬 Ví dụ</div><div class="examples-list-detail">';
+                                                    noteData.examples.forEach(function(ex) {
+                                                        examplesHtml += '<div class="example-item-detail"><div class="example-jp-detail">' + ex.japanese + '</div><div class="example-vn-detail">' + ex.vietnamese + '</div></div>';
+                                                    });
+                                                    examplesHtml += '</div></div>';
+                                                    container.innerHTML += examplesHtml;
+                                                }
+                                            } catch (e) {
+                                                console.error('Error parsing note:', e);
+                                            }
+                                        })();
+                                        /*]]>*/
+                                    </script>
+                                </th:block>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentIndex = 0;
+        const totalCards = document.querySelectorAll('.flashcard-container').length;
+        let currentMode = 'list';
+        
+        // Switch between modes
+        function switchMode(mode) {
+            currentMode = mode;
+            
+            // Update buttons
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Move slider
+            const slider = document.querySelector('.mode-slider');
+            
+            if (mode === 'flashcard') {
+                document.getElementById('flashcardModeBtn').classList.add('active');
+                document.getElementById('flashcardMode').classList.add('active');
+                document.getElementById('listMode').classList.remove('active');
+                document.getElementById('progressInfo').style.display = 'block';
+                slider.style.transform = 'translateX(0)';
+            } else {
+                document.getElementById('listModeBtn').classList.add('active');
+                document.getElementById('listMode').classList.add('active');
+                document.getElementById('flashcardMode').classList.remove('active');
+                document.getElementById('progressInfo').style.display = 'none';
+                slider.style.transform = 'translateX(100%)';
+            }
+        }
+        
+        // Filter list
+        function filterList() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const items = document.querySelectorAll('.vocab-item');
+            let visibleCount = 0;
+            
+            items.forEach(item => {
+                const word = item.getAttribute('data-word').toLowerCase();
+                const reading = item.getAttribute('data-reading').toLowerCase();
+                const meaning = item.getAttribute('data-meaning').toLowerCase();
+                
+                if (word.includes(searchTerm) || reading.includes(searchTerm) || meaning.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            document.getElementById('listCount').textContent = visibleCount;
+        }
+        
+        // Toggle vocab detail
+        function toggleVocabDetail(button) {
+            const vocabItem = button.closest('.vocab-item');
+            const detail = vocabItem.querySelector('.vocab-detail');
+            const icon = button.querySelector('.expand-icon');
+            
+            if (detail.style.display === 'none') {
+                detail.style.display = 'block';
+                icon.textContent = '▲';
+                button.classList.add('expanded');
+            } else {
+                detail.style.display = 'none';
+                icon.textContent = '▼';
+                button.classList.remove('expanded');
+            }
+        }
+        
+        function showCard(index) {
+            // Hide all cards
+            document.querySelectorAll('.flashcard-container').forEach(card => {
+                card.style.display = 'none';
+                card.classList.remove('active');
+            });
+            
+            // Show current card
+            const cards = document.querySelectorAll('.flashcard-container');
+            if (cards[index]) {
+                cards[index].style.display = 'block';
+                cards[index].classList.add('active');
+                
+                // Reset flip
+                const cardInner = cards[index].querySelector('.card-inner');
+                if (cardInner) {
+                    cardInner.classList.remove('flipped');
+                }
+            }
+            
+            // Update progress
+            document.getElementById('currentCard').textContent = index + 1;
+            document.getElementById('progressBar').style.width = ((index + 1) / totalCards * 100) + '%';
+            
+            // Update buttons
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === totalCards - 1;
+        }
+        
+        function flipCard() {
+            const activeCard = document.querySelector('.flashcard-container.active');
+            if (activeCard) {
+                const cardInner = activeCard.querySelector('.card-inner');
+                if (cardInner) {
+                    cardInner.classList.toggle('flipped');
+                }
+            }
+        }
+        
+        function nextCard() {
+            if (currentIndex < totalCards - 1) {
+                currentIndex++;
+                showCard(currentIndex);
+            }
+        }
+        
+        function previousCard() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                showCard(currentIndex);
+            }
+        }
+        
+        function markLearned() {
+            alert('Đã đánh dấu là đã học!');
+            nextCard();
+        }
+        
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hide progress info on load (list mode is default)
+            document.getElementById('progressInfo').style.display = 'none';
+            
+            // Show first card
+            showCard(0);
+            
+            // Click to flip
+            document.querySelectorAll('.flashcard').forEach(card => {
+                card.addEventListener('click', flipCard);
+            });
+            
+            // Button events
+            document.getElementById('prevBtn').addEventListener('click', previousCard);
+            document.getElementById('nextBtn').addEventListener('click', nextCard);
+            document.getElementById('markLearnedBtn').addEventListener('click', markLearned);
+            document.getElementById('flipBtn').addEventListener('click', flipCard);
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowLeft') previousCard();
+                if (e.key === 'ArrowRight') nextCard();
+                if (e.key === ' ') {
+                    e.preventDefault();
+                    flipCard();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

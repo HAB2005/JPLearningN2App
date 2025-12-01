@@ -1,0 +1,294 @@
+.study-header {
+    margin-bottom: 30px;
+}
+
+.study-header h2 {
+    color: #333;
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.study-header p {
+    color: #666;
+    font-size: 16px;
+}
+
+/* Type Tabs */
+.type-tabs {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.tab-btn {
+    padding: 15px 30px;
+    background: none;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s;
+    margin-bottom: -2px;
+}
+
+.tab-btn:hover {
+    color: #667eea;
+}
+
+.tab-btn.active {
+    color: #667eea;
+    border-bottom-color: #667eea;
+}
+
+/* Tab Content */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Chapters Grid */
+.chapters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 25px;
+}
+
+.chapter-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.chapter-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.chapter-header {
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.chapter-header h3 {
+    color: #667eea;
+    font-size: 20px;
+    margin-bottom: 8px;
+}
+
+.chapter-header p {
+    color: #888;
+    font-size: 14px;
+}
+
+.lessons-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.lesson-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.2s;
+}
+
+.lesson-item:hover {
+    background: #667eea;
+    color: white;
+    transform: translateX(5px);
+}
+
+.lesson-name {
+    font-weight: 500;
+}
+
+.lesson-count {
+    font-size: 13px;
+    color: #888;
+    background: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+}
+
+.lesson-item:hover .lesson-count {
+    background: rgba(255, 255, 255, 0.9);
+    color: #667eea;
+}
+
+/* Kanji Section */
+.kanji-options {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 25px;
+}
+
+.kanji-selector-card,
+.kanji-info-card {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.kanji-selector-card h3 {
+    color: #333;
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+.kanji-selector-card p {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.kanji-quantity-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.quantity-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 25px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.quantity-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.quantity-number {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.quantity-label {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.custom-quantity {
+    padding-top: 20px;
+    border-top: 2px solid #f0f0f0;
+}
+
+.custom-quantity label {
+    display: block;
+    color: #666;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.custom-input-group {
+    display: flex;
+    gap: 10px;
+}
+
+.custom-input-group input {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.custom-input-group input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.btn-custom {
+    padding: 12px 25px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn-custom:hover {
+    transform: translateY(-2px);
+}
+
+.kanji-info-card h4 {
+    color: #333;
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+.kanji-info-card ul {
+    list-style: none;
+    padding: 0;
+}
+
+.kanji-info-card li {
+    color: #666;
+    padding: 10px 0;
+    padding-left: 25px;
+    position: relative;
+    line-height: 1.6;
+}
+
+.kanji-info-card li:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #667eea;
+    font-weight: 700;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.empty-state p {
+    color: #888;
+    font-size: 16px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .chapters-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .kanji-options {
+        grid-template-columns: 1fr;
+    }
+    
+    .kanji-quantity-options {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

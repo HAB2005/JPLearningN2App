@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JLPT N2 Practice</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 JLPT N2 Practice</h1>
+            <p>Ôn luyện từ vựng và Kanji - Shinkanzen Master</p>
+        </div>
+
+        <div class="mode-selection">
+            <a href="/study" class="mode-card">
+                <div class="icon">📖</div>
+                <h2>Học cơ bản</h2>
+                <p>Xem và ghi nhớ từ vựng, kanji theo từng bài học. Bấm vào thẻ để xem nghĩa và ví dụ.</p>
+            </a>
+
+            <a href="/quiz" class="mode-card">
+                <div class="icon">✏️</div>
+                <h2>Ôn tập trắc nghiệm</h2>
+                <p>Kiểm tra kiến thức với câu hỏi trắc nghiệm 4 đáp án. Xem kết quả chi tiết sau khi hoàn thành.</p>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

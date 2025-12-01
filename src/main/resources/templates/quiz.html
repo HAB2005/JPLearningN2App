@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luyện tập - JLPT N2 Practice</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/quiz.css}">
+    <script th:replace="~{fragments/header :: header-script}"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div th:replace="~{fragments/header :: header}"></div>
+            
+            <!-- Quiz Content -->
+            <div class="content">
+                <div class="quiz-header">
+                    <div class="quiz-header-left">
+                        <h2>✏️ Luyện tập</h2>
+                        <p>Chọn loại bài tập và bài học để bắt đầu kiểm tra</p>
+                    </div>
+                    <button class="btn-advanced-practice" onclick="openAdvancedModal()">
+                        <span class="btn-icon">⚙️</span>
+                        <span>Luyện tập nâng cao</span>
+                    </button>
+                </div>
+
+                <!-- Type Tabs -->
+                <div class="type-tabs">
+                    <button class="tab-btn active" onclick="switchTab('vocabulary')">
+                        📖 Từ vựng
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('kanji')">
+                        ✍️ Kanji
+                    </button>
+                </div>
+
+                <!-- Vocabulary Section -->
+                <div id="vocabulary-section" class="tab-content active">
+                    <div class="chapters-grid">
+                        <div th:each="chapter : ${chapters}" class="chapter-card">
+                            <div class="chapter-header">
+                                <h3 th:text="${chapter.name}">Chapter 1</h3>
+                                <p th:text="${chapter.description}">Mô tả chương</p>
+                            </div>
+                            <div class="lessons-list">
+                                <a th:each="lesson : ${chapter.lessons}" 
+                                   th:href="@{/quiz-preview?type=lesson&id={id}(id=${lesson.id})}"
+                                   class="lesson-item">
+                                    <span class="lesson-name" th:text="${lesson.name}">Lesson 1</span>
+                                    <span class="lesson-count" th:text="${lesson.description != null ? lesson.description : '0 câu'}">0 câu</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div th:if="${chapters.isEmpty()}" class="empty-state">
+                        <p>📚 Chưa có chương học nào. Vui lòng thêm dữ liệu vào database.</p>
+                    </div>
+                </div>
+
+                <!-- Kanji Section -->
+                <div id="kanji-section" class="tab-content">
+                    <div class="kanji-options">
+                        <div class="kanji-selector-card">
+                            <h3>Chọn số lượng câu hỏi Kanji</h3>
+                            <p>Chọn số lượng câu hỏi kanji bạn muốn luyện tập</p>
+                            
+                            <div class="kanji-quantity-options">
+                                <button class="quantity-btn" onclick="startKanjiQuiz(10)">
+                                    <span class="quantity-number">10</span>
+                                    <span class="quantity-label">Câu hỏi</span>
+                                </button>
+                                <button class="quantity-btn" onclick="startKanjiQuiz(20)">
+                                    <span class="quantity-number">20</span>
+                                    <span class="quantity-label">Câu hỏi</span>
+                                </button>
+                                <button class="quantity-btn" onclick="startKanjiQuiz(30)">
+                                    <span class="quantity-number">30</span>
+                                    <span class="quantity-label">Câu hỏi</span>
+                                </button>
+                                <button class="quantity-btn" onclick="startKanjiQuiz(50)">
+                                    <span class="quantity-number">50</span>
+                                    <span class="quantity-label">Câu hỏi</span>
+                                </button>
+                            </div>
+
+                            <div class="custom-quantity">
+                                <label for="customQuantity">Hoặc nhập số lượng tùy chỉnh:</label>
+                                <div class="custom-input-group">
+                                    <input type="number" id="customQuantity" min="1" max="200" placeholder="Nhập số lượng">
+                                    <button class="btn-custom" onclick="startCustomKanjiQuiz()">Bắt đầu</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="kanji-info-card">
+                            <h4>💡 Gợi ý luyện tập</h4>
+                            <ul>
+                                <li>Bắt đầu với 10-20 câu để làm quen với format</li>
+                                <li>Câu hỏi sẽ bao gồm: đọc, nghĩa, và cách viết kanji</li>
+                                <li>Hệ thống sẽ chấm điểm và hiển thị kết quả chi tiết</li>
+                                <li>Bạn có thể xem lại đáp án sau khi hoàn thành</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Advanced Practice Modal -->
+    <div id="advancedModal" class="advanced-modal" style="display: none;">
+        <div class="modal-overlay" onclick="closeAdvancedModal()"></div>
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2>⚙️ Cấu hình luyện tập nâng cao</h2>
+                <button class="modal-close-btn" onclick="closeAdvancedModal()">✕</button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Step 1: Select Lessons -->
+                <div class="config-section">
+                    <div class="section-header">
+                        <span class="step-number">1</span>
+                        <h3>Chọn bài học</h3>
+                    </div>
+                    <p class="section-description">Chọn một hoặc nhiều bài học để luyện tập</p>
+                    
+                    <div class="lessons-selection">
+                        <div class="search-lessons">
+                            <input type="text" placeholder="🔍 Tìm kiếm bài học..." id="searchLessons" onkeyup="filterLessons()">
+                        </div>
+                        
+                        <div class="chapters-accordion">
+                            <!-- Dynamic Chapters from Database using Thymeleaf -->
+                            <th:block th:if="${chapters != null and !chapters.isEmpty()}">
+                                <div th:each="chapter, chapterStat : ${chapters}" class="accordion-item" th:attr="data-chapter-id=${chapter.id}">
+                                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                                        <span class="accordion-icon">▶</span>
+                                        <span class="accordion-title" th:text="${chapter.name}">Chapter Name</span>
+                                        <span class="selected-count" th:attr="data-total=${chapter.lessons.size()}" th:text="'0/' + ${chapter.lessons.size()} + ' bài'">0/0 bài</span>
+                                    </div>
+                                    <div class="accordion-content">
+                                        <th:block th:if="${chapter.lessons != null and !chapter.lessons.isEmpty()}">
+                                            <label th:each="lesson : ${chapter.lessons}" 
+                                                   class="lesson-checkbox" 
+                                                   th:attr="data-lesson-name=${lesson.name}">
+                                                <input type="checkbox" 
+                                                       name="lesson" 
+                                                       th:value="${lesson.id}" 
+                                                       th:attr="data-word-count=${lesson.flashcards != null ? lesson.flashcards.size() : 0}"
+                                                       onchange="updateChapterCount(this)">
+                                                <span class="checkbox-custom"></span>
+                                                <span class="lesson-label">
+                                                    <span class="lesson-name" th:text="${lesson.name}">Lesson Name</span>
+                                                    <span class="lesson-info" th:text="${lesson.flashcards != null ? lesson.flashcards.size() : 0} + ' từ'">0 từ</span>
+                                                </span>
+                                            </label>
+                                        </th:block>
+                                        <th:block th:if="${chapter.lessons == null or chapter.lessons.isEmpty()}">
+                                            <div class="no-lessons">Chưa có bài học nào</div>
+                                        </th:block>
+                                    </div>
+                                </div>
+                            </th:block>
+                            <th:block th:if="${chapters == null or chapters.isEmpty()}">
+                                <div class="no-chapters">
+                                    <p>📚 Chưa có chương học nào trong hệ thống</p>
+                                </div>
+                            </th:block>
+                        </div>
+                        
+                        <div class="selection-summary">
+                            <span id="selectedLessonsCount">0 bài học được chọn</span>
+                            <button class="btn-clear-selection" onclick="clearSelection()">Xóa chọn</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 2: Question Types -->
+                <div class="config-section">
+                    <div class="section-header">
+                        <span class="step-number">2</span>
+                        <h3>Loại câu hỏi</h3>
+                    </div>
+                    <p class="section-description">Chọn các dạng câu hỏi bạn muốn luyện tập</p>
+                    
+                    <div class="question-types-grid">
+                        <label class="question-type-card">
+                            <input type="checkbox" name="questionType" value="meaning" checked onchange="updateQuestionTypeConfig()">
+                            <div class="card-content">
+                                <span class="card-icon">📖</span>
+                                <span class="card-title">Nghĩa của từ</span>
+                                <span class="card-description">Chọn nghĩa đúng của từ vựng</span>
+                            </div>
+                            <span class="card-checkmark">✓</span>
+                        </label>
+                        
+                        <label class="question-type-card">
+                            <input type="checkbox" name="questionType" value="reading" checked onchange="updateQuestionTypeConfig()">
+                            <div class="card-content">
+                                <span class="card-icon">🗣️</span>
+                                <span class="card-title">Cách đọc</span>
+                                <span class="card-description">Chọn cách đọc đúng của từ</span>
+                            </div>
+                            <span class="card-checkmark">✓</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Step 3: Number of Questions -->
+                <div class="config-section">
+                    <div class="section-header">
+                        <span class="step-number">3</span>
+                        <h3>Số lượng câu hỏi</h3>
+                    </div>
+                    <p class="section-description">Cấu hình số lượng câu hỏi cho từng loại hoặc chọn random chung</p>
+                    
+                    <div class="quantity-selector">
+                        <!-- Mode Selection -->
+                        <div class="quantity-mode-tabs">
+                            <button type="button" class="mode-tab active" onclick="switchQuantityMode('random')" id="randomModeTab">
+                                <span class="tab-icon">🎲</span>
+                                <span class="tab-label">Random chung</span>
+                            </button>
+                            <button type="button" class="mode-tab" onclick="switchQuantityMode('detailed')" id="detailedModeTab" disabled>
+                                <span class="tab-icon">⚙️</span>
+                                <span class="tab-label">Chi tiết từng loại</span>
+                            </button>
+                        </div>
+                        
+                        <!-- Random Mode -->
+                        <div id="randomMode" class="quantity-mode-content active">
+                            <div class="quantity-options">
+                                <label class="quantity-option">
+                                    <input type="radio" name="randomQuantity" value="all" checked>
+                                    <span class="option-content">
+                                        <span class="option-icon">♾️</span>
+                                        <span class="option-label">Tất cả</span>
+                                    </span>
+                                </label>
+                                <label class="quantity-option">
+                                    <input type="radio" name="randomQuantity" value="10">
+                                    <span class="option-content">
+                                        <span class="option-number">10</span>
+                                        <span class="option-label">câu</span>
+                                    </span>
+                                </label>
+                                <label class="quantity-option">
+                                    <input type="radio" name="randomQuantity" value="20">
+                                    <span class="option-content">
+                                        <span class="option-number">20</span>
+                                        <span class="option-label">câu</span>
+                                    </span>
+                                </label>
+                                <label class="quantity-option">
+                                    <input type="radio" name="randomQuantity" value="30">
+                                    <span class="option-content">
+                                        <span class="option-number">30</span>
+                                        <span class="option-label">câu</span>
+                                    </span>
+                                </label>
+                                <label class="quantity-option">
+                                    <input type="radio" name="randomQuantity" value="50">
+                                    <span class="option-content">
+                                        <span class="option-number">50</span>
+                                        <span class="option-label">câu</span>
+                                    </span>
+                                </label>
+                            </div>
+                            
+                            <div class="custom-quantity-input">
+                                <label class="quantity-option custom">
+                                    <input type="radio" name="randomQuantity" value="custom">
+                                    <span class="option-content">
+                                        <span class="option-label">Tùy chỉnh:</span>
+                                        <input type="number" id="customRandomCount" min="1" placeholder="Nhập số câu" onchange="validateRandomQuantity()">
+                                    </span>
+                                </label>
+                            </div>
+                            
+                            <div class="mode-note">
+                                <span class="note-icon">💡</span>
+                                <span>Hệ thống sẽ random câu hỏi từ các loại đã chọn</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Detailed Mode -->
+                        <div id="detailedMode" class="quantity-mode-content">
+                            <div class="detailed-config">
+                                <div class="question-type-quantity" id="meaningQuantity" style="display: none;">
+                                    <div class="type-header">
+                                        <span class="type-icon">📖</span>
+                                        <span class="type-name">Nghĩa của từ</span>
+                                    </div>
+                                    <div class="type-input-group">
+                                        <input type="number" name="meaningCount" min="1" placeholder="0" value="10" onchange="validateDetailedQuantity(this)">
+                                        <span class="input-suffix">câu</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="question-type-quantity" id="readingQuantity" style="display: none;">
+                                    <div class="type-header">
+                                        <span class="type-icon">🗣️</span>
+                                        <span class="type-name">Cách đọc</span>
+                                    </div>
+                                    <div class="type-input-group">
+                                        <input type="number" name="readingCount" min="1" placeholder="0" value="10" onchange="validateDetailedQuantity(this)">
+                                        <span class="input-suffix">câu</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mode-note">
+                                <span class="note-icon">💡</span>
+                                <span>Tổng số câu hỏi sẽ là tổng của các loại đã cấu hình</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeAdvancedModal()">Hủy</button>
+                <button class="btn-start-practice" onclick="startAdvancedPractice()">
+                    <span class="btn-icon">🚀</span>
+                    <span>Bắt đầu luyện tập</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(type) {
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to selected tab
+            event.target.classList.add('active');
+            document.getElementById(type + '-section').classList.add('active');
+        }
+
+        function startKanjiQuiz(quantity) {
+            window.location.href = '/quiz/kanji?quantity=' + quantity;
+        }
+
+        function startCustomKanjiQuiz() {
+            const quantity = document.getElementById('customQuantity').value;
+            if (quantity && quantity > 0) {
+                window.location.href = '/quiz/kanji?quantity=' + quantity;
+            } else {
+                alert('Vui lòng nhập số lượng hợp lệ');
+            }
+        }
+        
+        // Advanced Modal Functions
+        function openAdvancedModal() {
+            document.getElementById('advancedModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeAdvancedModal() {
+            document.getElementById('advancedModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        function toggleAccordion(header) {
+            const item = header.parentElement;
+            const content = item.querySelector('.accordion-content');
+            const icon = header.querySelector('.accordion-icon');
+            
+            item.classList.toggle('active');
+            
+            if (item.classList.contains('active')) {
+                content.style.maxHeight = content.scrollHeight + 'px';
+                icon.textContent = '▼';
+            } else {
+                content.style.maxHeight = '0';
+                icon.textContent = '▶';
+            }
+        }
+        
+        function clearSelection() {
+            document.querySelectorAll('input[name="lesson"]:checked').forEach(cb => {
+                cb.checked = false;
+            });
+            updateSelectionCount();
+        }
+        
+        function updateSelectionCount() {
+            const count = document.querySelectorAll('input[name="lesson"]:checked').length;
+            document.getElementById('selectedLessonsCount').textContent = count + ' bài học được chọn';
+            
+            // Enable/disable detailed tab based on lesson selection
+            const detailedTab = document.getElementById('detailedModeTab');
+            
+            if (count > 0) {
+                detailedTab.disabled = false;
+            } else {
+                detailedTab.disabled = true;
+                
+                // Switch back to random mode if currently on disabled tab
+                if (document.getElementById('detailedMode').classList.contains('active')) {
+                    switchQuantityMode('random');
+                }
+            }
+        }
+        
+        function updateChapterCount(checkbox) {
+            // Update chapter count when checkbox changes
+            const accordionItem = checkbox.closest('.accordion-item');
+            const allCheckboxes = accordionItem.querySelectorAll('input[name="lesson"]');
+            const checkedCheckboxes = accordionItem.querySelectorAll('input[name="lesson"]:checked');
+            const countSpan = accordionItem.querySelector('.selected-count');
+            
+            countSpan.textContent = checkedCheckboxes.length + '/' + allCheckboxes.length + ' bài';
+            
+            // Update total selection count
+            updateSelectionCount();
+        }
+        
+        function showToast(message) {
+            // Simple toast notification
+            const toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 10);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+        
+        function filterLessons() {
+            const searchTerm = document.getElementById('searchLessons').value.toLowerCase();
+            const accordionItems = document.querySelectorAll('.accordion-item');
+            
+            accordionItems.forEach(item => {
+                const chapterTitle = item.querySelector('.accordion-title').textContent.toLowerCase();
+                const lessonCheckboxes = item.querySelectorAll('.lesson-checkbox');
+                let hasVisibleLesson = false;
+                
+                lessonCheckboxes.forEach(checkbox => {
+                    const lessonName = checkbox.getAttribute('data-lesson-name').toLowerCase();
+                    if (lessonName.includes(searchTerm) || chapterTitle.includes(searchTerm)) {
+                        checkbox.style.display = 'flex';
+                        hasVisibleLesson = true;
+                    } else {
+                        checkbox.style.display = 'none';
+                    }
+                });
+                
+                // Show/hide chapter based on whether it has visible lessons
+                if (hasVisibleLesson || chapterTitle.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        function switchQuantityMode(mode) {
+            // Update tabs
+            document.querySelectorAll('.mode-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.quantity-mode-content').forEach(content => content.classList.remove('active'));
+            
+            if (mode === 'random') {
+                document.getElementById('randomModeTab').classList.add('active');
+                document.getElementById('randomMode').classList.add('active');
+            } else if (mode === 'detailed') {
+                document.getElementById('detailedModeTab').classList.add('active');
+                document.getElementById('detailedMode').classList.add('active');
+            }
+        }
+        
+        function updateQuestionTypeConfig() {
+            // Show/hide quantity inputs based on selected question types
+            const meaningChecked = document.querySelector('input[name="questionType"][value="meaning"]').checked;
+            const readingChecked = document.querySelector('input[name="questionType"][value="reading"]').checked;
+            
+            document.getElementById('meaningQuantity').style.display = meaningChecked ? 'flex' : 'none';
+            document.getElementById('readingQuantity').style.display = readingChecked ? 'flex' : 'none';
+        }
+        
+        function validateDetailedQuantity(input) {
+            const selectedLessons = document.querySelectorAll('input[name="lesson"]:checked');
+            
+            // Calculate total available words
+            let totalWords = 0;
+            selectedLessons.forEach(cb => {
+                totalWords += parseInt(cb.getAttribute('data-word-count'));
+            });
+            
+            let value = parseInt(input.value);
+            if (isNaN(value) || value < 1) {
+                input.value = 1;
+            } else if (value > totalWords) {
+                input.value = totalWords;
+                showToast(`Số câu tối đa là ${totalWords} (tổng số từ trong các bài đã chọn)`);
+            }
+        }
+        
+        function validateRandomQuantity() {
+            const input = document.getElementById('customRandomCount');
+            const selectedLessons = document.querySelectorAll('input[name="lesson"]:checked');
+            
+            // Calculate total available words
+            let totalWords = 0;
+            selectedLessons.forEach(cb => {
+                totalWords += parseInt(cb.getAttribute('data-word-count'));
+            });
+            
+            let value = parseInt(input.value);
+            if (isNaN(value) || value < 1) {
+                input.value = 1;
+            } else if (totalWords > 0 && value > totalWords) {
+                input.value = totalWords;
+                showToast(`Số câu tối đa là ${totalWords} (tổng số từ trong các bài đã chọn)`);
+            }
+        }
+        
+        function startAdvancedPractice() {
+            // Validate selections
+            const selectedLessons = Array.from(document.querySelectorAll('input[name="lesson"]:checked'));
+            const selectedTypes = Array.from(document.querySelectorAll('input[name="questionType"]:checked'));
+            
+            if (selectedLessons.length === 0) {
+                showToast('⚠️ Vui lòng chọn ít nhất 1 bài học');
+                return;
+            }
+            
+            if (selectedTypes.length === 0) {
+                showToast('⚠️ Vui lòng chọn ít nhất 1 loại câu hỏi');
+                return;
+            }
+            
+            // Calculate total available words
+            let totalWords = 0;
+            selectedLessons.forEach(cb => {
+                totalWords += parseInt(cb.getAttribute('data-word-count'));
+            });
+            
+            let quantityInfo = '';
+            let totalQuestions = 0;
+            
+            if (document.getElementById('randomMode').classList.contains('active')) {
+                const randomQty = document.querySelector('input[name="randomQuantity"]:checked').value;
+                if (randomQty === 'all') {
+                    totalQuestions = totalWords;
+                    quantityInfo = 'Random: Tất cả (' + totalWords + ' câu)';
+                } else if (randomQty === 'custom') {
+                    totalQuestions = parseInt(document.getElementById('customRandomCount').value) || 10;
+                    totalQuestions = Math.min(totalQuestions, totalWords);
+                    quantityInfo = 'Random: ' + totalQuestions + ' câu';
+                } else {
+                    totalQuestions = Math.min(parseInt(randomQty), totalWords);
+                    quantityInfo = 'Random: ' + totalQuestions + ' câu';
+                }
+            } else if (document.getElementById('detailedMode').classList.contains('active')) {
+                const meaningCount = parseInt(document.querySelector('input[name="meaningCount"]').value) || 0;
+                const readingCount = parseInt(document.querySelector('input[name="readingCount"]').value) || 0;
+                totalQuestions = meaningCount + readingCount;
+                
+                if (totalQuestions > totalWords) {
+                    showToast(`⚠️ Tổng số câu (${totalQuestions}) vượt quá số từ có sẵn (${totalWords})`);
+                    return;
+                }
+                
+                quantityInfo = 'Nghĩa: ' + meaningCount + ', Cách đọc: ' + readingCount;
+            }
+            
+            console.log('Selected lessons:', selectedLessons.map(cb => cb.value));
+            console.log('Question types:', selectedTypes.map(cb => cb.value));
+            console.log('Total questions:', totalQuestions);
+            console.log('Quantity info:', quantityInfo);
+            
+            alert('Tính năng đang được phát triển!\n\n' +
+                  'Bài học: ' + selectedLessons.length + '\n' +
+                  'Loại câu hỏi: ' + selectedTypes.length + '\n' +
+                  'Tổng số câu: ' + totalQuestions + '\n' +
+                  quantityInfo);
+        }
+        
+        // Event listeners for checkboxes
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize question type config
+            updateQuestionTypeConfig();
+        });
+    </script>
+</body>
+</html>

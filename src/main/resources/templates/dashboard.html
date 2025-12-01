@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - JLPT N2 Practice</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <script th:replace="~{fragments/header :: header-script}"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div th:replace="~{fragments/header :: header}"></div>
+            
+            <!-- Dashboard Content -->
+            <div class="content">
+                <div class="dashboard-welcome">
+                    <h2>Xin chào, <span th:text="${session.user.username}">User</span>!</h2>
+                    <p>Chào mừng bạn đến với hệ thống luyện thi JLPT N2</p>
+                </div>
+                
+                <!-- Dashboard content will be added here -->
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <h3>Từ vựng đã học</h3>
+                        <p class="stat-number">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Kanji đã học</h3>
+                        <p class="stat-number">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Bài kiểm tra</h3>
+                        <p class="stat-number">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Điểm trung bình</h3>
+                        <p class="stat-number">0%</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

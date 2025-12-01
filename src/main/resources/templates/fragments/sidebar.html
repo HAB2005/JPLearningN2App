@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:fragment="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h2>JLPT N2</h2>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <ul>
+                <li>
+                    <a href="/dashboard" class="nav-item">
+                        <span class="icon">📊</span>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/study" class="nav-item">
+                        <span class="icon">📚</span>
+                        <span>Học tập</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/quiz" class="nav-item">
+                        <span class="icon">✏️</span>
+                        <span>Luyện tập</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/progress" class="nav-item">
+                        <span class="icon">📈</span>
+                        <span>Tiến độ</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/settings" class="nav-item">
+                        <span class="icon">⚙️</span>
+                        <span>Cài đặt</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        
+        <script>
+            // Auto highlight active menu based on current URL
+            document.addEventListener('DOMContentLoaded', function() {
+                const currentPath = window.location.pathname;
+                const navItems = document.querySelectorAll('.nav-item');
+                
+                navItems.forEach(item => {
+                    const href = item.getAttribute('href');
+                    if (currentPath === href || (href !== '/dashboard' && currentPath.startsWith(href))) {
+                        item.classList.add('active');
+                    }
+                });
+            });
+        </script>
+    </div>
+</body>
+</html>
