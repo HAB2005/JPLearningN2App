@@ -94,15 +94,20 @@ function displayQuestion() {
     document.getElementById('reviewQuestionWord').textContent = '';
     
     const reviewPrompt = document.getElementById('reviewQuestionPrompt');
-    if (detail.selectedOptionId === null) {
-        reviewPrompt.innerHTML = '<span style="color: #95a5a6;">⊘ Bạn đã bỏ qua câu này</span>';
+    
+    // Hiển thị câu hỏi từ database
+    let questionText = '';
+    if (question.questionText && question.questionText.trim() !== '') {
+        questionText = question.questionText;
     } else {
-        // Hiển thị câu hỏi từ database
-        if (question.questionText && question.questionText.trim() !== '') {
-            reviewPrompt.textContent = question.questionText;
-        } else {
-            reviewPrompt.textContent = 'Chọn đáp án đúng:';
-        }
+        questionText = 'Chọn đáp án đúng:';
+    }
+    
+    // Thêm thông báo bỏ qua nếu câu hỏi bị bỏ qua
+    if (detail.selectedOptionId === null) {
+        reviewPrompt.innerHTML = `${questionText}<br><span style="color: #95a5a6; font-size: 0.9em;">⊘ Bạn đã bỏ qua câu này</span>`;
+    } else {
+        reviewPrompt.textContent = questionText;
     }
     
     displayOptions(question, detail);
